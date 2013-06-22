@@ -8,7 +8,21 @@ class Views
       <!DOCTYPE html>
       <html lang="en">
         <head><title>Pull my branch</title></head>
-        <body>Hello world</body>
+        <body>
+          <h1>Pull my branch</h1>
+
+          <p>
+            <a href="/pull" title="Pull from origin">
+              Pull from origin
+            </a>
+          </p>
+
+          <p>
+            <a href="/ls-remote" title="Update remote branches">
+              Refresh list of branches from origin
+            </a>
+          </p>
+        </body>
       </html>
 ERB
   end
