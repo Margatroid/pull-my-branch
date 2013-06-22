@@ -1,10 +1,8 @@
 require 'sinatra'
 
-class Views
-  attr_reader :index
-
-  def initialize
-    @index = <<ERB
+module Views
+  TEMPLATES = {
+    index: <<ERB
       <!DOCTYPE html>
       <html lang="en">
         <head><title>Pull my branch</title></head>
@@ -25,14 +23,18 @@ class Views
         </body>
       </html>
 ERB
+  }
+
+  def self.get(template)
+    TEMPLATES[template]
   end
 end
 
 class App < Sinatra::Base
-  views = Views.new()
+  include Views
 
   get '/' do
-    erb views.index
+    erb Views.get(:index)
   end
 end
 
