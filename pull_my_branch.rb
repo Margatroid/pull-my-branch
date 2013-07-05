@@ -70,7 +70,6 @@ module Git
       return
     end
 
-    p "Switching to git checkout -f origin/#{ target }"
     `git checkout #{ target }`
     self.reset_from_origin()
   end
@@ -110,6 +109,8 @@ class App < Sinatra::Base
 
   post '/branch' do
     Git::change_branch(params[:branch])
+
+    redirect to('/')
   end
 end
 
