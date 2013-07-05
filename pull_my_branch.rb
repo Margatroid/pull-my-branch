@@ -58,7 +58,21 @@ module Git
   end
 
   def self.pull_from_origin
-    
+    `git pull origin #{ self.class.get_current_branch }`
+  end
+
+  def self.change_branch(target)
+    if self.class.get_remote_branches.exclude?(target)
+      p "Error: #{ target } does not exist. Cannot change branch."
+      return
+    end
+
+    `git checkout -f origin/#{ target }`
+    self.class.pull_from_origin()
+  end
+
+  def self.fetch
+    `git fetch origin`
   end
 
   def self.get_current_branch
