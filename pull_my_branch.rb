@@ -50,7 +50,7 @@ ERB
 end
 
 module Git
-  def self.get_remote_branches
+  def self.remote_branches
     `git branch -a`.split(/\n/)
       .select { |branch| branch.include?('remotes/origin') }
       .reject { |branch| branch.include?('origin/HEAD') }
@@ -58,11 +58,11 @@ module Git
   end
 
   def self.pull_from_origin
-    `git pull origin #{ self.class.get_current_branch }`
+    `git pull origin #{ self.class.current_branch }`
   end
 
   def self.change_branch(target)
-    if self.class.get_remote_branches.exclude?(target)
+    if self.class.remote_branches.exclude?(target)
       p "Error: #{ target } does not exist. Cannot change branch."
       return
     end
@@ -75,7 +75,7 @@ module Git
     `git fetch origin`
   end
 
-  def self.get_current_branch
+  def self.current_branch
     `git rev-parse --abbrev-ref HEAD`.strip
   end
 end
@@ -86,7 +86,7 @@ class App < Sinatra::Base
   set :bind, '0.0.0.0'
 
   get '/' do
-    @branches = Git::get_remote_branches()
+    @branches = Git::remote_branches()
     erb Views.get(:index)
   end
 
@@ -94,7 +94,7 @@ class App < Sinatra::Base
     payload = JSON.parse(params[:payload])
     branch  = payload['ref'].match(/[^\/]+$/)[0]
 
-    Git::pull_from_origin() if branch.eq(Git::get_current_branch())
+    Git::pull_from_origin() if branch.eq(Git::current_branch())
   end
 end
 
