@@ -93,6 +93,12 @@ class App < Sinatra::Base
     erb Views.get(:index)
   end
 
+  get '/pull' do
+    Git::fetch()
+    Git::reset_from_origin()
+    redirect to('/')
+  end
+
   get '/ls-remote' do
     Git::fetch()
     redirect to('/')
@@ -103,13 +109,11 @@ class App < Sinatra::Base
     branch  = payload['ref'].match(/[^\/]+$/)[0]
 
     Git::reset_from_origin() if branch.eq(Git::current_branch())
-
     redirect to('/')
   end
 
   post '/branch' do
     Git::change_branch(params[:branch])
-
     redirect to('/')
   end
 end
