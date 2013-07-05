@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'json'
 
 module Views
   TEMPLATES = {
@@ -66,7 +67,7 @@ class App < Sinatra::Base
     erb Views.get(:index)
   end
 
-  post 'hook' do
+  post '/hook' do
     push = JSON.parse(params[:payload])
     data = "Inspecting #{ push.inspect }"
     p data
