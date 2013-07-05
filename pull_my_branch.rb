@@ -5,7 +5,12 @@ module Views
     index: <<ERB
       <!DOCTYPE html>
       <html lang="en">
-        <head><title>Pull my branch</title></head>
+        <head>
+          <title>Pull my branch</title>
+          <style>
+            form label { float: left; }
+          </style>
+        </head>
         <body>
           <h1>Pull my branch</h1>
 
@@ -20,6 +25,19 @@ module Views
               Refresh list of branches from origin
             </a>
           </p>
+
+          <p>
+            <form method="post" action="/branch">
+              <label for="branch_selector">
+                Change to a different branch
+              </label>
+              <select size="20" id="branch_selector" name="branch">
+                <% @branches.each do |branch| %>
+                  <option value="<%= branch %>"><%= branch %></option>
+                <% end %>
+              </select>
+            </form>
+          </p>
         </body>
       </html>
 ERB
@@ -32,8 +50,9 @@ end
 
 module Git
   def self.get_remote_branches
-    branches        = `git branch -a`.split(/\n/).map { |line| line.strip }
-    branches.select { |branch_name| branch_name.include?('remotes/origin') }
+    branches = `git branch -a`.split(/\n/).map { |line| line.strip }
+    remotes  = branches.select { |branch| branch.include?('remotes/origin') }
+                 .reject { |branch| branch.include?('origin/HEAD') }
   end
 end
 
@@ -43,7 +62,7 @@ class App < Sinatra::Base
   set :bind, '0.0.0.0'
 
   get '/' do
-    p 'Hello World'
+    @branches = Git::get_remote_branches
     erb Views.get(:index)
   end
 
@@ -55,4 +74,4 @@ class App < Sinatra::Base
   end
 end
 
-#App.run!
+App.run!
