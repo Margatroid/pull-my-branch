@@ -94,6 +94,11 @@ class App < Sinatra::Base
     erb Views.get(:index)
   end
 
+  get '/ls-remote' do
+    Git::fetch()
+    redirect to('/')
+  end
+
   post '/hook' do
     payload = JSON.parse(params[:payload])
     branch  = payload['ref'].match(/[^\/]+$/)[0]
