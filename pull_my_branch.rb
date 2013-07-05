@@ -30,12 +30,29 @@ ERB
   end
 end
 
-class App < Sinatra::Base
-  include Views
-
-  get '/' do
-    erb Views.get(:index)
+module Git
+  def self.get_remote_branches
+    branches        = `git branch -a`.split(/\n/).map { |line| line.strip }
+    branches.select { |branch_name| branch_name.include?('remotes/origin') }
   end
 end
 
-App.run!
+class App < Sinatra::Base
+  include Views
+
+  set :bind, '0.0.0.0'
+
+  get '/' do
+    p 'Hello World'
+    erb Views.get(:index)
+  end
+
+  post 'hook' do
+    push = JSON.parse(params[:payload])
+    data = "Inspecting #{ push.inspect }"
+    p data
+    data
+  end
+end
+
+#App.run!
