@@ -27,6 +27,8 @@ module Views
             </a>
           </p>
 
+          <h3>Currently on branch <%= Git::current_branch %></h3>
+
           <p>
             <form method="post" action="/branch">
               <label for="branch_selector">
@@ -97,6 +99,8 @@ class App < Sinatra::Base
     branch  = payload['ref'].match(/[^\/]+$/)[0]
 
     Git::pull_from_origin() if branch.eq(Git::current_branch())
+
+    redirect to('/')
   end
 
   post '/branch' do
