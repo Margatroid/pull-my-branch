@@ -37,6 +37,7 @@ module Views
                   <option value="<%= branch %>"><%= branch %></option>
                 <% end %>
               </select>
+              <button type="submit">Switch branch</button>
             </form>
           </p>
         </body>
@@ -95,6 +96,10 @@ class App < Sinatra::Base
     branch  = payload['ref'].match(/[^\/]+$/)[0]
 
     Git::pull_from_origin() if branch.eq(Git::current_branch())
+  end
+
+  post '/branch' do
+    Git::change_branch(params[:branch])
   end
 end
 
