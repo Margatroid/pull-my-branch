@@ -60,8 +60,8 @@ module Git
       .map { |branch| branch.match(/[^\/]+$/)[0] }
   end
 
-  def self.pull_from_origin
-    `git pull origin #{ self.current_branch }`
+  def self.reset_from_origin
+    `git reset --hard origin/#{ self.current_branch }`
   end
 
   def self.change_branch(target)
@@ -71,12 +71,12 @@ module Git
     end
 
     p "Switching to git checkout -f origin/#{ target }"
-    `git checkout -f origin/#{ target }`
-    self.pull_from_origin()
+    `git checkout #{ target }`
+    self.reset_from_origin()
   end
 
   def self.fetch
-    `git fetch origin`
+    `git fetch --all`
   end
 
   def self.current_branch
@@ -98,7 +98,7 @@ class App < Sinatra::Base
     payload = JSON.parse(params[:payload])
     branch  = payload['ref'].match(/[^\/]+$/)[0]
 
-    Git::pull_from_origin() if branch.eq(Git::current_branch())
+    Git::reset_from_origin() if branch.eq(Git::current_branch())
 
     redirect to('/')
   end
