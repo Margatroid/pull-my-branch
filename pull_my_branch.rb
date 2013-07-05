@@ -57,12 +57,12 @@ module Git
       .map { |branch| branch.match(/[^\/]+$/)[0] }
   end
 
-  def self.auto_update(branch)
-
+  def self.pull_from_origin
+    
   end
 
   def self.get_current_branch
-    `git rev-parse --abbrev-ref HEAD`
+    `git rev-parse --abbrev-ref HEAD`.strip
   end
 end
 
@@ -72,13 +72,15 @@ class App < Sinatra::Base
   set :bind, '0.0.0.0'
 
   get '/' do
-    @branches = Git::get_remote_branches
+    @branches = Git::get_remote_branches()
     erb Views.get(:index)
   end
 
   post '/hook' do
     payload = JSON.parse(params[:payload])
     branch  = payload['ref'].match(/[^\/]+$/)[0]
+
+    Git::pull_from_origin() if branch.eq(Git::get_current_branch())
   end
 end
 
