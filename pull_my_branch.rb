@@ -108,7 +108,7 @@ class App < Sinatra::Base
     payload = JSON.parse(params[:payload])
     branch  = payload['ref'].match(/[^\/]+$/)[0]
 
-    Git::reset_from_origin() if branch.eq(Git::current_branch())
+    Git::reset_from_origin() if branch.eql?(Git::current_branch())
     redirect to('/')
   end
 
