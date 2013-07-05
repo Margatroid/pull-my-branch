@@ -51,9 +51,18 @@ end
 
 module Git
   def self.get_remote_branches
-    branches = `git branch -a`.split(/\n/).map { |line| line.strip }
-    remotes  = branches.select { |branch| branch.include?('remotes/origin') }
-                 .reject { |branch| branch.include?('origin/HEAD') }
+    `git branch -a`.split(/\n/)
+      .select { |branch| branch.include?('remotes/origin') }
+      .reject { |branch| branch.include?('origin/HEAD') }
+      .map { |branch| branch.match(/[^\/]+$/)[0] }
+  end
+
+  def self.auto_update(branch)
+
+  end
+
+  def self.get_current_branch
+    `git rev-parse --abbrev-ref HEAD`
   end
 end
 
@@ -68,10 +77,8 @@ class App < Sinatra::Base
   end
 
   post '/hook' do
-    push = JSON.parse(params[:payload])
-    data = "Inspecting #{ push.inspect }"
-    p data
-    data
+    payload = JSON.parse(params[:payload])
+    branch  = payload['ref'].match(/[^\/]+$/)[0]
   end
 end
 
